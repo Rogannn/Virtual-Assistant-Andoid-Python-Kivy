@@ -1,0 +1,121 @@
+{
+  "intents": [
+    {
+      "tag": "location_of_campus",
+      "patterns": ["where is dhvsu porac campus located",
+                  "where is dabsu porac campus located",
+                  "location of dabsu porac campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "public_or_private_uni",
+      "patterns": ["is DHVSU public or private",
+                  "is dabsu public or private"],
+      "responses": [""]
+    },
+    {
+      "tag": "requirements_of_transferees",
+      "patterns": ["What are the requirements of Freshmen to enroll in DHVSU Porac Campus",
+                  "What are the requirements of Freshmen to enroll in dabsu Porac Campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "requirements_to_enroll",
+      "patterns": ["What are the requirements of Transferees to enroll in DHVSU Porac Campus",
+                  "What are the requirements of Transferees to enroll in dabsu Porac Campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "academic_cp_of_campus",
+      "patterns": ["who is the academic chairperson at dhvsu porac campus",
+                  "who is the academic chairperson at dabsu porac campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "director_of_campus",
+      "patterns": ["who is the director at dhvsu porac campus",
+                  "who is the director at dabsu porac campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "uni_mission",
+      "patterns": ["mission of dhvsu",
+                  "mission of dabsu"],
+      "responses": [""]
+    },
+    {
+      "tag": "uni_vision",
+      "patterns": ["vision of dhvsu",
+                  "vision of dabsu"],
+      "responses": [""]
+    },
+    {
+      "tag": "tuition_fee_per_sem",
+      "patterns": ["How much is the tuition fee per semester?"],
+      "responses": [""]
+    },
+    {
+      "tag": "available_courses",
+      "patterns": ["What are the available courses in DHVSU Porac Campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "replay",
+      "patterns": ["again", "what did you say", "say that again"],
+      "responses": [""]
+    },
+    {
+      "tag": "to_register",
+      "patterns": [
+        "Where to register",
+        "Where to register in porac campus",
+        "How to register in porac campus"
+      ],
+      "responses": [""]
+    },
+    {
+      "tag": "to_enroll",
+      "patterns": ["How to enroll", "How to enroll in porac campus"],
+      "responses": [""]
+    },
+    {
+      "tag": "ask_teacher",
+      "patterns": ["Where are the teachers", "How to talk to teachers"],
+      "responses": [""]
+    },
+    {
+      "tag": "howisit",
+      "patterns": ["how are you", "how is it going", "what's up"],
+      "responses": [""]
+    },
+    {
+      "tag": "time_check",
+      "patterns": [
+        "What time is it?",
+        "What is the time now?",
+        "What is the current time?"
+      ],
+      "responses": [""]
+    },
+    {
+      "tag": "gratitude",
+      "patterns": ["Thank you", "Thanks"],
+      "responses": [""]
+    },
+    {
+      "tag": "exit",
+      "patterns": ["Goodbye", "Bye", "Stop", "Quit", "I have to go"],
+      "responses": [""]
+    },
+    {
+      "tag": "current_date",
+      "patterns": ["What is the date today", "current date", "current day"],
+      "responses": [""]
+    },
+    {
+      "tag": "greeting",
+      "patterns": ["Hey", "Hello", "What's up?", "hi", "Greetings"],
+      "responses": [""]
+    }
+  ]
+}
