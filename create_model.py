@@ -13,10 +13,6 @@ from nltk.stem import WordNetLemmatizer
 
 from tensorflow.keras.models import load_model
 
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
-
 
 class VAssistant(metaclass=ABCMeta):
     @abstractmethod
@@ -43,11 +39,11 @@ class MakeVAssistant(VAssistant):
         if model_name is None:
             self.words = pickle.load(open(f'{self.model_name}_words.pkl', 'rb'))
             self.classes = pickle.load(open(f'{self.model_name}_classes.pkl', 'rb'))
-            self.model = load_model(f'{self.model_name}.h5')
+            self.model = load_model(f'{self.model_name}.tflite')
         else:
             self.words = pickle.load(open(f'{model_name}_words.pkl', 'rb'))
             self.classes = pickle.load(open(f'{model_name}_classes.pkl', 'rb'))
-            self.model = load_model(f'{model_name}.h5')
+            self.model = load_model(f'{model_name}.tflite')
 
     def _clean_up_sentence(self, sentence):
         sentence_words = nltk.word_tokenize(sentence)
