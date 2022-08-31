@@ -1,5 +1,7 @@
 from kivy import Config
+from kivy.clock import Clock
 from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager
 
 from kivymd.uix.bottomsheet import MDListBottomSheet
 from kivy.uix.image import Image
@@ -25,179 +27,65 @@ Window.size = (310, 580)
 Config.set('graphics', 'width', '310')
 Config.set('graphics', 'height', '580')
 
-KV = '''
-MDScreen:
-
-    canvas.before:
-        Color:
-            rgba: ((217/255,187/255,142/255,1))
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
-    MDTopAppBar:
-        id: top_bar
-        pos_hint: {"top": 1}
-        title: "Virtual Assistant Support in DHVSU Porac Campus Application"
-    
-    BoxLayout:
-        pos_hint: {"x":0, "y":.7}
-        Image:
-            id: bot_state_img
-            width: 100
-            size_hint_y: None
-            allow_stretch: True
-            source: "images/vaicon-listening.png"
-    
-    BoxLayout:
-        id: loading_screen 
-        size_hint_y: None
-        pos_hint: {"x":0, "y":1}
-        Label:
-            text: "Loading..."
-            font_size: 15
-            color: 1,1,1,1
-            size_hint: 1, None
-            halign: "center"
-            size: self.texture_size
-            background_color: 0,0,0,1
-            canvas.before:
-                Color:
-                    rgba: self.background_color
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-        
-    BoxLayout:
-        size_hint_y: None
-        pos_hint: {"center_x": .5, "center_y": .400}
-        Label:
-            text: "Available Questions:"
-            font_size: 20
-            color: 0,0,0,1
-
-    MDRaisedButton:
-        id: clear_btn
-        text: "Clear"
-        on_release: app.update_bot_speech("Cleared!")
-        pos_hint: {"center_x": .8, "center_y": .8}
-        md_bg_color: ((51/255,204/255,255/255,1))
-        line_color: 1, 1, 1, 1
-        
-    MDRaisedButton:
-        text: "Category 1"
-        on_release: app.show_category_data(1)
-        pos_hint: {"center_x": .5, "center_y": .330}
-        md_bg_color: ((228/255,118/255,93/255,1))
-        line_color: 1, 1, 1, 1
-        elevation: 20
-        
-    MDRaisedButton:
-        text: "Category 2"
-        on_release: app.show_category_data(2)
-        pos_hint: {"center_x": .5, "center_y": .265}
-        md_bg_color: ((228/255,118/255,93/255,1))
-        line_color: 1, 1, 1, 1
-        elevation: 20
-
-    MDRaisedButton:
-        text: "Category 3"
-        on_release: app.show_category_data(3)
-        pos_hint: {"center_x": .5, "center_y": .20}
-        md_bg_color: ((228/255,118/255,93/255,1))
-        line_color: 1, 1, 1, 1
-        elevation: 20
-    
-    BoxLayout:
-        orientation: "vertical"
-        height: self.minimum_height
-        padding: 5
-        pos_hint: {"x": 0, "y": -.85}
-        AnchorLayout:
-            anchor_x: "center"
-            anchor_y: "top"
-            Label:
-                id: user_message_label 
-                text: " "
-                font_size: 15
-                color: 0,0,0,1
-                size_hint_y: None
-                markup: True
-                halign: "center"
-                text_size: self.width, None
-                height: self.texture_size[1]
-                background_color: 1,1,1,1
-                canvas.before:
-                    Color:
-                        rgba: self.background_color
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-
-    BoxLayout:
-        orientation: "vertical"
-        height: self.minimum_height
-        padding: 5
-        pos_hint: {"x": 0, "y": -.30}
-        AnchorLayout:
-            anchor_x: "center"
-            anchor_y: "top"
-            Label:
-                id: bot_message_label 
-                text: " "
-                font_size: 15
-                color: 0,0,0,1
-                size_hint_y: None
-                markup: True
-                halign: "center"
-                text_size: self.width, None
-                height: self.texture_size[1]
-                background_color: 1,1,1,1
-                canvas.before:
-                    Color:
-                        rgba: self.background_color
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-'''
+screen_manager = ScreenManager()
 
 
 class MainApp(MDApp):
+    global screen_manager
+
     stop_event = threading.Event()
     bot_speaking_img = Image(source='images/vaicon-speaking.png')
     bot_idle_img = Image(source='images/vaicon-idle.png')
     bot_listening_img = Image(source='images/vaicon-listening.png')
 
-    def install_nltk(self):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.main_screen = None
+        self.splash_screen = None
+
+    def build(self):
+        print("building..")
+        self.title = "Virtual Assistant Mobile"
+        self.splash_screen = Builder.load_file("splashScreen.kv")
+        self.main_screen = Builder.load_file("mainScreen.kv")
+        screen_manager.add_widget(self.splash_screen)
+        screen_manager.add_widget(self.main_screen)
+
+        init_message = "Use your mic or press one of the categories to see answerable questions."
+        self.main_screen.ids.user_message_label.text = init_message
+        self.main_screen.ids.bot_state_img.source = 'images/vaicon-idle.png'
+
+        t1 = Thread(target=self.init_assistant, args=("Hello",))
+        t1.start()
+
+        return screen_manager
+
+    def download_nltks(self):
         nltk.download('punkt')
         nltk.download('wordnet')
         nltk.download('omw-1.4')
 
-    def build(self):
-        return Builder.load_string(KV)
+    def change_screen(self, dt):
+        # change to main screen
+        screen_manager.current = "MainScreen"
 
     def on_start(self):
-        # self.root.ids.loading_screen.pos_hint = {"center_x": .5, "center_y": .5}
-        # Clock.schedule_once(self.install_nltk())
-        init_message = "Use your mic or press one of the categories to see answerable questions."
-        self.root.ids.user_message_label.text = init_message
-        self.root.ids.bot_state_img.source = 'images/vaicon-idle.png'
-        t1 = Thread(target=self.init_assistant, args=("Hello",))
-        t1.start()
+        print("loading..")
+        Clock.schedule_once(self.change_screen, 7)
 
     def set_bot_state(self, state, instance=None, value=None):
         if state == "speaking":
-            self.root.ids.bot_state_img.source = 'images/vaicon-speaking.png'
+            self.main_screen.ids.bot_state_img.source = 'images/vaicon-speaking.png'
         if state == "listening":
-            self.root.ids.bot_state_img.source = 'images/vaicon-listening.png'
+            self.main_screen.ids.bot_state_img.source = 'images/vaicon-listening.png'
         if state == "idle":
-            self.root.ids.bot_state_img.source = 'images/vaicon-idle.png'
+            self.main_screen.ids.bot_state_img.source = 'images/vaicon-idle.png'
 
     def update_user_speech(self, speech):
-        self.root.ids.user_message_label.text = speech
+        self.main_screen.ids.user_message_label.text = speech
 
     def update_bot_speech(self, speech):
-        self.root.ids.bot_message_label.text = speech
+        self.main_screen.ids.bot_message_label.text = speech
 
     def callback_for_category_items(self, *args):
         query = args[0]
