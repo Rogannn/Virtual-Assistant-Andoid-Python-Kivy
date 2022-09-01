@@ -23,9 +23,11 @@ recognizer = sr.Recognizer()
 
 spoken_list = []
 
-Window.size = (310, 580)
-Config.set('graphics', 'width', '310')
-Config.set('graphics', 'height', '580')
+WIDTH = 310
+HEIGHT = 580
+Window.size = (WIDTH, HEIGHT)
+Config.set('graphics', 'width', WIDTH)
+Config.set('graphics', 'height', HEIGHT)
 
 screen_manager = ScreenManager()
 
@@ -42,6 +44,7 @@ class MainApp(MDApp):
         super().__init__()
         self.main_screen = None
         self.splash_screen = None
+        self.loading = True
 
     def build(self):
         print("building..")
@@ -55,23 +58,34 @@ class MainApp(MDApp):
         self.main_screen.ids.user_message_label.text = init_message
         self.main_screen.ids.bot_state_img.source = 'images/vaicon-idle.png'
 
-        t1 = Thread(target=self.init_assistant, args=("Hello",))
-        t1.start()
-
         return screen_manager
 
     def download_nltks(self):
+        print("0/3")
+        self.splash_screen.ids.download_label.text = "0/3"
         nltk.download('punkt')
+        print("1/3")
+        self.splash_screen.ids.download_label.text = "1/3"
         nltk.download('wordnet')
+        print("2/3")
+        self.splash_screen.ids.download_label.text = "2/3"
         nltk.download('omw-1.4')
+        print("3/3")
+        self.splash_screen.ids.download_label.text = "3/3"
+        self.loading = False
+        Clock.schedule_once(self.change_screen, 1)
 
     def change_screen(self, dt):
         # change to main screen
         screen_manager.current = "MainScreen"
 
+        t1 = Thread(target=self.init_assistant, args=("Hello",))
+        t1.start()
+
     def on_start(self):
-        print("loading..")
-        Clock.schedule_once(self.change_screen, 7)
+        screen_manager.current = "SplashScreen"
+        t2 = Thread(target=self.download_nltks)
+        t2.start()
 
     def set_bot_state(self, state, instance=None, value=None):
         if state == "speaking":
